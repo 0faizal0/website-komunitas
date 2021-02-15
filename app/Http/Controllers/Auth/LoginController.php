@@ -29,6 +29,8 @@ class LoginController extends Controller
      */
     // protected $redirectTo = RouteServiceProvider::HOME;
 
+    
+
     public function redirectTo(){
         $role = Auth::user()->role;
 
@@ -50,4 +52,6 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    
 }

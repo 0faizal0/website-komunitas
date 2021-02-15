@@ -9,9 +9,13 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Auth;
+use Illuminate\Http\Request;
+use Session;
+use DB;
 
 class RegisterController extends Controller
 {
+    
     /*
     |--------------------------------------------------------------------------
     | Register Controller
@@ -30,20 +34,21 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    // protected $redirectTo = RouteServiceProvider::HOME;
+    public $redirectTo = RouteServiceProvider::HOME;
 
-    public function redirectTo(){
-        $role = Auth::user()->role;
+    public function redirect(){
+        $role = Auth::User('role');
 
         switch($role) {
             case 'admin':
             return '/admin';
     break;
             case 'user':
-            return '/home';
+            return '/login';
     break;
         }
     }
+
     /**
      * Create a new controller instance.
      *
@@ -83,6 +88,58 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => 'user',
+            //'status' => false,
          ]);
     }
+
+
+    public function edit($id){
+
+        $user_roles = User::findOrFail($id);
+        return view('edit')->with('user_roles', $user_roles);
+    }
+
+    public function update(Request $request,$id){
+        $user_roles = User::find($id);
+        $user_roles->name = $request->input('name');
+        $user_roles->role = $request->input('role');
+        $user_roles->update();
+        
+        return redirect('admin')->with('message','Your data is updated');
+    }
+
+    public function view($id){
+
+        $user_roles = User::findOrFail($id);
+        return view('user-view')->with('user_roles', $user_roles);
+    }
+
+    public function delete($id){
+
+        $data = User::findOrFail($id);
+        $data->delete(); 
+        return redirect('admin')->with('message','Your data is deleted');
+    }
+
+    public function status_update($id){
+
+        $data = \DB::table('users')->where('id',$id)->first();
+        $status = $data['isban'];
+
+        if($status == 1){
+            \DB::table('users')->where('id',$id)->update([
+                'isban'=>0
+            ]);
+        }else{
+            \DB::table('users')->where('id',$id)->update([
+                'isban'=>1
+            ]);
+        }
+        
+        session()->flash('message','Member status has been updated succesfully.');
+        return redirect('admin');
+
+    }
+       
+
 }

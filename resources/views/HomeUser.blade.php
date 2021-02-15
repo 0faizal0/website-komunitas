@@ -360,7 +360,7 @@
                             </div>
                             <div class="list-group list-group-flush">
                                 <a href="{{ route('profile') }}" class="list-group-item">Profile</a>
-                                <a href="{{ route('login') }}" class="list-group-item text-danger">Sign Out!</a>
+                                <a href="{{ route('logout') }}" class="list-group-item text-danger">Sign Out!</a>
                             </div>
                         </div>
                     </li>

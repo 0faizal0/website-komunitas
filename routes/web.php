@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MemberController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +24,15 @@ Route::get('/homeuser', function () {
 
 Auth::routes();
 
-Route::get('/admin', 'App\Http\Controllers\AdminController@index');
+Route::group(['/admin'], function () {
+    Route::get('/admin', [MemberController::class,'show'])->name('dashboardadmin');
+ });
+
+ Route::get('role-edit/{id}', [App\Http\Controllers\Auth\RegisterController::class,'edit']);
+ Route::put('role-update/{id}', [App\Http\Controllers\Auth\RegisterController::class,'update']);
+ Route::get('delete/{id}', [App\Http\Controllers\Auth\RegisterController::class,'delete']);
+ Route::get('view/{id}', [App\Http\Controllers\Auth\RegisterController::class,'view']);
+ Route::get('status-update/{id}', [App\Http\Controllers\Auth\RegisterController::class,'status_update']);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -40,3 +49,12 @@ Route::get('/group', function () {
 })->name('group');
 
 Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
+
+Route::get('/list',[MemberController::class,'show']);
+
+Route::get('status/{id}', 'App\Http\Controllers\HomeController@status')->name('status');
+
+Route::group(['middleware' => ['auth','isUser']], function() {
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+});
+
